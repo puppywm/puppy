@@ -91,11 +91,22 @@ int check_for_wm(xcb_connection_t *c,xcb_screen_t *scr,xcb_window_t root){
 }
 
 void focus(xcb_connection_t *dpy,xcb_window_t win){
-    if(win){
+    if (win){
         xcb_set_input_focus(
                 dpy,
                 XCB_INPUT_FOCUS_POINTER_ROOT,
                 win,XCB_CURRENT_TIME);
+    }
+    else return;
+}
+
+void unfocus(xcb_connection_t *dpy,xcb_window_t win){
+    if (win){
+        xcb_set_input_focus(
+            dpy,
+            XCB_INPUT_FOCUS_NONE,
+            win,XCB_CURRENT_TIME
+        );
     }
     else return;
 }
@@ -136,6 +147,12 @@ void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev
 }
 
 // for sloppy focus
-void mouse_enter(xcb_connection_t *dpy,xcb_window_t win){
-    // todo!!!
+void mouse_enter(xcb_connection_t *dpy,xcb_generic_event_t *ev){
+    xcb_enter_notify_event_t *e = (xcb_enter_notify_event_t *)ev;
+    focus(dpy,e->event);
+}
+
+void mouse_leave(xcb_connection_t *dpy,xcb_generic_event_t *ev){
+    xcb_leave_notify_event_t *e = (xcb_leave_notify_event_t *)ev;
+    unfocus(dpy,e->event);
 }

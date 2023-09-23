@@ -69,6 +69,11 @@ int main(int argc,char **argv){
                 break;
             }
             case XCB_ENTER_NOTIFY: {
+                mouse_enter(dpy,ev);
+                break;
+            }
+            case XCB_LEAVE_NOTIFY: {
+                mouse_leave(dpy,ev);
                 break;
             }
             default: {
