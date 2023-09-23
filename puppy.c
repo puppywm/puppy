@@ -27,7 +27,7 @@ xcb_window_t root;
 
 xcb_generic_event_t *ev;
 
-int main(void){
+int main(int argc,char **argv){
     // initialization and checks
     init_conn(&dpy);
 
@@ -53,7 +53,8 @@ int main(void){
 
     // lmao hard coded moment
     if(spawn("sxhkd"))
-        printf("warn: unable to spawn sxhkd, do you have it installed?\n(nothing will work without it btw)[unless you have something else in mind?]");
+        printf("warn: unable to spawn sxhkd, do you have it installed?\n\
+                (nothing will work without it btw)[unless you have something else in mind?]");
 
     xcb_flush(dpy);
 
