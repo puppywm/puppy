@@ -119,6 +119,10 @@ int has_focus(xcb_connection_t *dpy){
     return 1;
 }
 
+int win_has_focus(xcb_connection_t *dpy,xcb_window_t win){
+    return 0;
+}
+
 void move_window(xcb_connection_t *dpy,xcb_window_t win,int x,int y){
     const uint32_t coords[] = { x, y };
     xcb_configure_window(dpy,win,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,coords);
@@ -136,7 +140,10 @@ void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev
     int newX = scr->width_in_pixels / 2 - wingeom->width / 2;
     int newY = scr->height_in_pixels / 2 - wingeom->height / 2;
 
-    uint32_t val = XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_LEAVE_WINDOW | XCB_EVENT_MASK_EXPOSURE;
+    uint32_t val = XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_LEAVE_WINDOW | 
+                   XCB_EVENT_MASK_KEY_PRESS    | XCB_EVENT_MASK_KEY_RELEASE  | 
+                   XCB_EVENT_MASK_EXPOSURE;
+
     xcb_change_window_attributes_checked(dpy,e->window,XCB_CW_EVENT_MASK,&val);
 
     move_window(dpy,e->window,newX,newY);
@@ -146,7 +153,6 @@ void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev
     xcb_flush(dpy);
 }
 
-// for sloppy focus
 void mouse_enter(xcb_connection_t *dpy,xcb_generic_event_t *ev){
     xcb_enter_notify_event_t *e = (xcb_enter_notify_event_t *)ev;
     focus(dpy,e->event);
@@ -155,4 +161,8 @@ void mouse_enter(xcb_connection_t *dpy,xcb_generic_event_t *ev){
 void mouse_leave(xcb_connection_t *dpy,xcb_generic_event_t *ev){
     xcb_leave_notify_event_t *e = (xcb_leave_notify_event_t *)ev;
     unfocus(dpy,e->event);
+}
+
+void key_press(xcb_connection_t *dpy,xcb_generic_event_t *ev){
+    //xcb_key_press_event_t *e = (xcb_key_press_event_t *)ev;
 }
