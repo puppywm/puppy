@@ -72,10 +72,6 @@ int main(int argc,char **argv){
                 mouse_enter(dpy,ev);
                 break;
             }
-            case XCB_LEAVE_NOTIFY: {
-                mouse_leave(dpy,ev);
-                break;
-            }
             default: {
                 xcb_flush(dpy);
                 break;

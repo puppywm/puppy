@@ -119,48 +119,30 @@ int has_focus(xcb_connection_t *dpy){
     return 1;
 }
 
-int win_has_focus(xcb_connection_t *dpy,xcb_window_t win){
-    return 0;
-}
-
 void move_window(xcb_connection_t *dpy,xcb_window_t win,int x,int y){
     const uint32_t coords[] = { x, y };
     xcb_configure_window(dpy,win,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,coords);
 }
 
 void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev){
-    xcb_map_request_event_t *e;
-    e = (xcb_map_request_event_t *)ev;
+    xcb_map_request_event_t *e = (xcb_map_request_event_t *)ev;
 
     xcb_map_window(dpy,e->window);
 
-    xcb_get_geometry_reply_t *wingeom;
-    wingeom = xcb_get_geometry_reply(dpy,xcb_get_geometry(dpy,e->window),NULL);
+    uint32_t val[1];
+    val[0] = XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_KEY_PRESS | 
+             XCB_EVENT_MASK_KEY_RELEASE  | XCB_EVENT_MASK_FOCUS_CHANGE;
 
-    int newX = scr->width_in_pixels / 2 - wingeom->width / 2;
-    int newY = scr->height_in_pixels / 2 - wingeom->height / 2;
-
-    uint32_t val = XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_LEAVE_WINDOW | 
-                   XCB_EVENT_MASK_KEY_PRESS    | XCB_EVENT_MASK_KEY_RELEASE  | 
-                   XCB_EVENT_MASK_EXPOSURE;
-
-    xcb_change_window_attributes_checked(dpy,e->window,XCB_CW_EVENT_MASK,&val);
-
-    move_window(dpy,e->window,newX,newY);
-    focus(dpy,e->window);
-
-    free(wingeom);
+    xcb_change_window_attributes_checked(dpy,e->window,XCB_CW_EVENT_MASK,val);
     xcb_flush(dpy);
+
+    focus(dpy,e->window);
+    move_window(dpy,e->window,10,10);
 }
 
 void mouse_enter(xcb_connection_t *dpy,xcb_generic_event_t *ev){
     xcb_enter_notify_event_t *e = (xcb_enter_notify_event_t *)ev;
     focus(dpy,e->event);
-}
-
-void mouse_leave(xcb_connection_t *dpy,xcb_generic_event_t *ev){
-    xcb_leave_notify_event_t *e = (xcb_leave_notify_event_t *)ev;
-    unfocus(dpy,e->event);
 }
 
 void key_press(xcb_connection_t *dpy,xcb_generic_event_t *ev){
