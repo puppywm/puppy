@@ -61,12 +61,12 @@ int main(int argc,char **argv){
     // event loop
     while((ev = xcb_wait_for_event(dpy))){
         switch(ev->response_type & ~0x80){
-            case XCB_EXPOSE: { // I forgot what I was using this for
-                break;
-            }
             case XCB_MAP_REQUEST: {
                 map_request(dpy,scr,ev);
                 break;
+            }
+            case XCB_BUTTON_PRESS: {
+                mouse_click(dpy,ev); 
             }
             default: {
                 xcb_flush(dpy);

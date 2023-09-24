@@ -143,3 +143,11 @@ void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev
 void key_press(xcb_connection_t *dpy,xcb_generic_event_t *ev){
     //xcb_key_press_event_t *e = (xcb_key_press_event_t *)ev;
 }
+
+void mouse_click(xcb_connection_t *dpy,xcb_generic_event_t *ev){
+    xcb_button_press_event_t *e = (xcb_button_press_event_t *)ev;
+    xcb_window_t win = e->child;
+
+    uint32_t vals[1] = {XCB_STACK_MODE_ABOVE};
+    xcb_configure_window(dpy,win,XCB_CONFIG_WINDOW_STACK_MODE,vals);
+}
