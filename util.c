@@ -131,18 +131,13 @@ void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev
 
     uint32_t val[1];
     val[0] = XCB_EVENT_MASK_ENTER_WINDOW | XCB_EVENT_MASK_KEY_PRESS | 
-             XCB_EVENT_MASK_KEY_RELEASE  | XCB_EVENT_MASK_FOCUS_CHANGE;
+             XCB_EVENT_MASK_FOCUS_CHANGE | XCB_EVENT_MASK_BUTTON_PRESS;
 
     xcb_change_window_attributes_checked(dpy,e->window,XCB_CW_EVENT_MASK,val);
     xcb_flush(dpy);
 
-    focus(dpy,e->window);
-    move_window(dpy,e->window,10,10);
-}
-
-void mouse_enter(xcb_connection_t *dpy,xcb_generic_event_t *ev){
-    xcb_enter_notify_event_t *e = (xcb_enter_notify_event_t *)ev;
-    focus(dpy,e->event);
+    //focus(dpy,e->window);
+    move_window(dpy,e->window,DISTANCE_FROM_CORNER,DISTANCE_FROM_CORNER);
 }
 
 void key_press(xcb_connection_t *dpy,xcb_generic_event_t *ev){

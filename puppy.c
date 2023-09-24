@@ -68,10 +68,6 @@ int main(int argc,char **argv){
                 map_request(dpy,scr,ev);
                 break;
             }
-            case XCB_ENTER_NOTIFY: {
-                mouse_enter(dpy,ev);
-                break;
-            }
             default: {
                 xcb_flush(dpy);
                 break;
