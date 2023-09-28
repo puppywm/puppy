@@ -44,12 +44,12 @@ int main(int argc,char **argv){
         XCB_ATOM_WM_NAME,XCB_ATOM_STRING,
         8,strlen(WM_NAME),WM_NAME);
 
-    uint32_t val;
-    //uint32_t vals[3];
+    //uint32_t val;
+    uint32_t vals[3];
 
     // the magic!!!
-    val = XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT;
-    xcb_change_window_attributes_checked(dpy,root,XCB_CW_EVENT_MASK,&val);
+    vals[0] = XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT;
+    xcb_change_window_attributes_checked(dpy,root,XCB_CW_EVENT_MASK,vals);
 
     // lmao hard coded moment
     if(spawn("sxhkd"))
@@ -66,7 +66,7 @@ int main(int argc,char **argv){
                 break;
             }
             case XCB_BUTTON_PRESS: {
-                mouse_click(dpy,ev); 
+                mouse_press(dpy,ev); 
                 break;
             }
             default: {
