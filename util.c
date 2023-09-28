@@ -7,6 +7,7 @@
  */
 
 #include <xcb/xcb.h>
+#include <xcb/xcb_keysyms.h>
 #include <xcb/xproto.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +15,8 @@
 #include <string.h>
 
 #include "puppy.h"
+
+#define LEN(x) (sizeof(x) / sizeof(*x))
 
 void throwerr(const char* error) {
     fprintf(stderr,"\033[31merr\033[0m: %s\n",error);
@@ -136,13 +139,11 @@ void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev
     xcb_change_window_attributes_checked(dpy,e->window,XCB_CW_EVENT_MASK,val);
     xcb_flush(dpy);
 
-    //focus(dpy,e->window);
+    focus(dpy,e->window);
     move_window(dpy,e->window,DISTANCE_FROM_CORNER,DISTANCE_FROM_CORNER);
 }
 
-void key_press(xcb_connection_t *dpy,xcb_generic_event_t *ev){
-    //xcb_key_press_event_t *e = (xcb_key_press_event_t *)ev;
-}
+void key_press(xcb_connection_t *dpy,xcb_generic_event_t *ev){NULL;}
 
 void mouse_click(xcb_connection_t *dpy,xcb_generic_event_t *ev){
     xcb_button_press_event_t *e = (xcb_button_press_event_t *)ev;

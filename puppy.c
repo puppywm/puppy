@@ -67,6 +67,7 @@ int main(int argc,char **argv){
             }
             case XCB_BUTTON_PRESS: {
                 mouse_click(dpy,ev); 
+                break;
             }
             default: {
                 xcb_flush(dpy);
