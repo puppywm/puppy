@@ -30,7 +30,7 @@ int main(int argc,char *argv[]){
 
     if (!strcmp(argv[1],"mv")){
         if (!(argv[2] && argv[3])){
-        error:
+        mverror:
             printf("invalid arguments\n");
             return 1;
         }
@@ -39,10 +39,11 @@ int main(int argc,char *argv[]){
         int newY = atoi(argv[3]);
 
         if (!argv[4])
-            goto error;
+            goto mverror;
 
         xcb_window_t wid = atoi(argv[4]);
        
         move_window(dpy,wid,newX,newY);
+        return 0;
     }
 }
