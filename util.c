@@ -7,7 +7,7 @@
  */
 
 #include <xcb/xcb.h>
-#include <xcb/xcb_keysyms.h>
+#include <xcb/xcb_aux.h>
 #include <xcb/xproto.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,17 +100,7 @@ void focus(xcb_connection_t *dpy,xcb_window_t win){
                 dpy,
                 XCB_INPUT_FOCUS_POINTER_ROOT,
                 win,XCB_CURRENT_TIME);
-    }
-    else return;
-}
-
-void unfocus(xcb_connection_t *dpy,xcb_window_t win){
-    if (win){
-        xcb_set_input_focus(
-            dpy,
-            XCB_INPUT_FOCUS_NONE,
-            win,XCB_CURRENT_TIME
-        );
+        xcb_aux_sync(dpy);
     }
     else return;
 }
@@ -124,8 +114,14 @@ int has_focus(xcb_connection_t *dpy){
 }
 
 void move_window(xcb_connection_t *dpy,xcb_window_t win,int x,int y){
-    const uint32_t coords[] = { x, y };
-    xcb_configure_window(dpy,win,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,coords);
+    uint32_t vals[2];
+
+    if (x)
+        vals[0] = x;
+    if (y)
+        vals[1] = y;
+
+    xcb_configure_window(dpy,win,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,vals);
 }
 
 void map_request(xcb_connection_t *dpy,xcb_screen_t *scr,xcb_generic_event_t *ev){
