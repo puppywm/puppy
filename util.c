@@ -7,7 +7,6 @@
  */
 
 #include <xcb/xcb.h>
-#include <xcb/xcb_aux.h>
 #include <xcb/xproto.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -100,7 +99,6 @@ void focus(xcb_connection_t *dpy,xcb_window_t win){
                 dpy,
                 XCB_INPUT_FOCUS_POINTER_ROOT,
                 win,XCB_CURRENT_TIME);
-        xcb_aux_sync(dpy);
     }
     else return;
 }
