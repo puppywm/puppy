@@ -7,6 +7,30 @@
 
 #include "util.hpp"
 
+// WM {
+xcb_connection_t *WM::dpy;
+xcb_screen_t *WM::scr;
+xcb_window_t WM::root;
+
+xcb_generic_event_t *WM::ev;
+
+void WM::init_conn(xcb_connection_t **c){
+    *c = xcb_connect(NULL,NULL);
+    if (xcb_connection_has_error(*c)){
+        util::annoy(error,"unable to access display");
+        std::exit(1);
+    }
+}
+
+void WM::close_conn(xcb_connection_t *c){
+    if (c != NULL){
+        xcb_disconnect(c);
+        std::exit(1);
+    }
+    std::exit(0);
+}
+// }
+
 // util {
 void util::annoy(annoy_t mode,const std::string message){
     switch(mode){
@@ -96,30 +120,6 @@ int util::check_for_wm(xcb_connection_t *c,xcb_window_t root){
         return 1;
     }
     return 0;
-}
-// }
-
-// WM {
-xcb_connection_t *WM::dpy;
-xcb_screen_t *WM::scr;
-xcb_window_t WM::root;
-
-xcb_generic_event_t *WM::ev;
-
-void WM::init_conn(xcb_connection_t **c){
-    *c = xcb_connect(NULL,NULL);
-    if (xcb_connection_has_error(*c)){
-        util::annoy(error,"unable to access display");
-        std::exit(1);
-    }
-}
-
-void WM::close_conn(xcb_connection_t *c){
-    if (c != NULL){
-        xcb_disconnect(c);
-        std::exit(1);
-    }
-    std::exit(0);
 }
 // }
 
