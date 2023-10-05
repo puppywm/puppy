@@ -1,7 +1,8 @@
 #include <iostream>
+extern "C" {
 #include <string.h>
 #include <xcb/xcb.h>
-
+}
 #include "util.hpp"
 
 int main(int argc,char *argv[]){

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <iostream>
+extern "C"{
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
+}
 
 enum annoy_t {
     error,

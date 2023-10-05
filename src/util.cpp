@@ -1,10 +1,11 @@
 #include <iostream>
+extern "C" {
 #include <xcb/xcb.h>
 #include <xcb/xcb_aux.h>
 #include <xcb/xproto.h>
 #include <unistd.h>
 #include <string.h>
-
+}
 #include "util.hpp"
 
 // WM {

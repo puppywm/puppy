@@ -1,7 +1,8 @@
 #include <iostream>
+extern "C"{
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
-
+}
 #include "util.hpp"
 
 int main(void){
