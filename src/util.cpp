@@ -79,6 +79,16 @@ void util::move_window(xcb_connection_t *c,xcb_window_t win,int x,int y){
     else if(!win) util::annoy(error,"invalid window id");
 }
 
+void util::raise_window(xcb_connection_t *c,xcb_window_t win){
+    if (win){
+        uint32_t val;
+        val = XCB_STACK_MODE_ABOVE;
+        xcb_configure_window(c,win,XCB_CONFIG_WINDOW_STACK_MODE,&val);
+        xcb_flush(c);
+    }
+    else if(!win) util::annoy(error,"invalid window id");
+}
+
 int util::check_for_wm(xcb_connection_t *c,xcb_window_t root){
     xcb_intern_atom_cookie_t net_wm_name_cookie;
     net_wm_name_cookie = xcb_intern_atom(c,0,
@@ -125,27 +135,55 @@ int util::check_for_wm(xcb_connection_t *c,xcb_window_t root){
 // }
 
 // events {
+void events::handle_configure_request(xcb_connection_t *c,xcb_generic_event_t *ev){
+    xcb_configure_request_event_t *e = (xcb_configure_request_event_t *)ev;
+    uint32_t vals[7];
+    uint32_t mask = 0;
+    if (e->value_mask & XCB_CONFIG_WINDOW_X){
+        vals[mask++] = e->x;
+    }
+    if (e->value_mask & XCB_CONFIG_WINDOW_Y){
+        vals[mask++] = e->y;
+    }
+    if (e->value_mask & XCB_CONFIG_WINDOW_WIDTH){
+        vals[mask++] = e->width;
+    }
+    if (e->value_mask & XCB_CONFIG_WINDOW_HEIGHT){
+        vals[mask++] = e->height;
+    }
+    if (e->value_mask & XCB_CONFIG_WINDOW_SIBLING){
+        vals[mask++] = e->sibling;
+    }
+    if (e->value_mask & XCB_CONFIG_WINDOW_STACK_MODE){
+        vals[mask++] = e->stack_mode;
+    }
+    xcb_configure_window(c,e->window,e->value_mask,vals);
+
+    xcb_flush(c);
+}
+
 void events::handle_map_request(xcb_connection_t *c,xcb_generic_event_t *ev){
     xcb_map_request_event_t *e = (xcb_map_request_event_t *)ev;
     xcb_window_t win = e->window;
 
-    uint32_t vals[2];
-    vals[0] = XCB_EVENT_MASK_FOCUS_CHANGE | XCB_EVENT_MASK_ENTER_WINDOW;
-            
-    vals[1] = 1;
+    uint32_t val = XCB_EVENT_MASK_FOCUS_CHANGE | XCB_EVENT_MASK_ENTER_WINDOW |
+                   XCB_EVENT_MASK_BUTTON_PRESS;
 
-    xcb_change_window_attributes_checked(c,win,XCB_CW_EVENT_MASK | XCB_CW_OVERRIDE_REDIRECT,vals);
+    xcb_change_window_attributes(c,win,XCB_CW_EVENT_MASK,&val);
 
     xcb_map_window(c,win);
     xcb_flush(c);
+
+    util::set_focus(c,win);
 }
 
 void events::handle_button_press(xcb_connection_t *c,xcb_generic_event_t *ev){
     xcb_button_press_event_t *e = (xcb_button_press_event_t *)ev;
-    xcb_window_t win = e->child;
-    
-    uint32_t vals[1];
-    vals[0] = XCB_STACK_MODE_ABOVE;
-    xcb_configure_window(c,win,XCB_CONFIG_WINDOW_STACK_MODE,vals);
+    xcb_window_t win = e->event;
+
+    std::cout << "button pressed in wid " << win << std::endl;
+
+    util::raise_window(c,win);
+    util::set_focus(c,win);
 }
 // }

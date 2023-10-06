@@ -18,7 +18,8 @@ int main(void){
 
     uint32_t vals[4];
 
-    vals[0] = XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+    vals[0] = XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY | XCB_EVENT_MASK_STRUCTURE_NOTIFY |
+              XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT;
     xcb_change_window_attributes_checked(puppy.dpy,puppy.root,XCB_CW_EVENT_MASK,vals);
 
     util::spawn("/bin/sxhkd");
@@ -27,6 +28,10 @@ int main(void){
 
     while((puppy.ev = xcb_wait_for_event(puppy.dpy))){
         switch(puppy.ev->response_type & ~0x80){
+            case XCB_CONFIGURE_REQUEST: {
+                events::handle_configure_request(puppy.dpy,puppy.ev);
+                break;
+            }
             case XCB_MAP_REQUEST: {
                 events::handle_map_request(puppy.dpy,puppy.ev);
                 break;
@@ -36,6 +41,7 @@ int main(void){
                 break;
             }
             default: {
+                util::annoy(warn,"unhandled event type, break event loop..");
                 break;
             }
         }
