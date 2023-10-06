@@ -48,6 +48,33 @@ int main(int argc,char *argv[]){
         free(geo);
     }
 
+    if (strncmp(argv[1],"rs",2)==0){
+        if (!(argv[2] && argv[3])){
+            util::annoy(error,"invalid args");
+            nc.close_conn(nc.dpy);
+            std::exit(1);
+        }
+
+        if (!argv[4]){
+            util::annoy(error,"invalid args");
+            nc.close_conn(nc.dpy);
+            std::exit(1);
+        }
+
+        int a = atoi(argv[2]);
+        int b = atoi(argv[3]);
+
+        xcb_window_t win = strtoul(argv[4],NULL,16);
+        xcb_get_geometry_reply_t *geo = xcb_get_geometry_reply(nc.dpy,xcb_get_geometry(nc.dpy,win),NULL);
+
+        int width = geo->width + a;
+        int height = geo->height + b;
+
+        util::resize_window(nc.dpy,strtoul(argv[4],NULL,16),width,height);
+        free(geo);
+    }
+
+
     if (strncmp(argv[1],"fw",2)==0){
         xcb_get_input_focus_reply_t *focus;
         focus = xcb_get_input_focus_reply(nc.dpy,xcb_get_input_focus(nc.dpy),NULL);
