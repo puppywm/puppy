@@ -189,11 +189,9 @@ void events::handle_map_request(xcb_connection_t *c,xcb_generic_event_t *ev){
     util::set_focus(c,win);
 }
 
-void events::handle_button_press(xcb_connection_t *c,xcb_generic_event_t *ev){
-    xcb_button_press_event_t *e = (xcb_button_press_event_t *)ev;
+void events::handle_enter_notify(xcb_connection_t *c,xcb_generic_event_t *ev){
+    xcb_enter_notify_event_t *e = (xcb_enter_notify_event_t *)ev;
     xcb_window_t win = e->event;
-
-    std::cout << "button pressed in wid " << win << std::endl;
 
     util::raise_window(c,win);
     util::set_focus(c,win);

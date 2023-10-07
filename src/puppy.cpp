@@ -35,8 +35,8 @@ int main(void){
                 events::handle_map_request(puppy.dpy,puppy.ev);
                 break;
             }
-            case XCB_BUTTON_PRESS: {
-                events::handle_button_press(puppy.dpy, puppy.ev);
+            case XCB_ENTER_NOTIFY: {
+                events::handle_enter_notify(puppy.dpy, puppy.ev);
                 break;
             }
             case XCB_CONFIGURE_REQUEST: {
@@ -44,7 +44,6 @@ int main(void){
                 break;
             }
             default: {
-                util::annoy(warn,"unhandled event type, break event loop..");
                 break;
             }
         }

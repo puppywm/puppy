@@ -40,6 +40,5 @@ namespace util {
 namespace events {
     void handle_configure_request(xcb_connection_t *c,xcb_generic_event_t *ev);
     void handle_map_request(xcb_connection_t *c,xcb_generic_event_t *e);
-    void handle_button_press(xcb_connection_t *c,xcb_generic_event_t *e);
     void handle_enter_notify(xcb_connection_t *c,xcb_generic_event_t *e);
 }
