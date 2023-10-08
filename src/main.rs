@@ -52,10 +52,16 @@ fn main() -> xcb::Result<()> {
                 let _ = dpy.flush()?;
                 set_focus(&dpy,win);
             },
-            /*
             xcb::Event::X(x::Event::ConfigureRequest(ev)) => {
+                let configvals = &[x::ConfigWindow::X(ev.x().into()),x::ConfigWindow::Y(ev.y().into()),
+                                   x::ConfigWindow::Width(ev.width().into()),x::ConfigWindow::Height(ev.height().into())];
+                let mut _mask: usize = 0;
+
+                dpy.send_request_checked(&x::ConfigureWindow {
+                    window: ev.window(),
+                    value_list: configvals
+                });
             },
-            */
             _ => {}
         }
     }
