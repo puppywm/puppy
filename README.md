@@ -1,3 +1,3 @@
 ### puppywm
 
-holy hell, highly unfinished
+soon to be an ok window manager :fire:
