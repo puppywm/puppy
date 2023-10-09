@@ -1,5 +1,5 @@
 extern crate xcb;
-use xcb::x::{self, Cw::EventMask};
+use xcb::x::{self, Cw::EventMask, Cw::OverrideRedirect};
 use std::process::Command;
 
 pub fn set_focus(dpy: &xcb::Connection,win: x::Window) -> () {
@@ -40,7 +40,7 @@ fn main() -> xcb::Result<()> {
         match event {
             xcb::Event::X(x::Event::MapRequest(ev)) => {
                 let win: x::Window = ev.window();
-                let mapvals = &[EventMask(x::EventMask::FOCUS_CHANGE | x::EventMask::BUTTON_PRESS)];
+                let mapvals = &[OverrideRedirect(true),EventMask(x::EventMask::FOCUS_CHANGE | x::EventMask::BUTTON_PRESS)];
                 
                 dpy.send_request_checked(&x::ChangeWindowAttributes {
                     window: win,
