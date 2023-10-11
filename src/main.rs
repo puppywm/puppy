@@ -1,5 +1,9 @@
 extern crate xcb;
-use xcb::x::{self, Cw::EventMask, Cw::OverrideRedirect};
+use xcb::x::{
+    self, 
+    Cw::EventMask, 
+    ConfigWindow::{X,Y,Width,Height,Sibling,StackMode}
+};
 use std::process::Command;
 
 pub fn set_focus(dpy: &xcb::Connection,win: x::Window) -> () {
@@ -8,13 +12,21 @@ pub fn set_focus(dpy: &xcb::Connection,win: x::Window) -> () {
         focus: win,
         time: x::CURRENT_TIME
     });
-    let _ = dpy.flush();
 }
+
+pub fn move_window(dpy: &xcb::Connection,win: x::Window,x: i32,y: i32) -> () {
+    dpy.send_request_checked(&x::ConfigureWindow {
+        window: win,
+        value_list: &[X(x.into()),Y(y.into())]
+    }); 
+}
+
 
 fn main() -> xcb::Result<()> {
     let Ok((dpy,_)) = xcb::Connection::connect(None) else {
         println!("unable to initialize connection with X server"); 
-        panic!()};
+        panic!()
+    };
 
     let scr = dpy.get_setup().roots().nth(0).unwrap();
     let root = scr.root();
@@ -28,7 +40,7 @@ fn main() -> xcb::Result<()> {
 
     dpy.flush()?;
     
-    let _ = Command::new("/bin/sxhkd").spawn();
+    let _ = Command::new("/bin/sxhkd").spawn().expect("failed to launch sxhkd");
 
     loop {
         let event = match dpy.wait_for_event() {
@@ -40,27 +52,41 @@ fn main() -> xcb::Result<()> {
         match event {
             xcb::Event::X(x::Event::MapRequest(ev)) => {
                 let win: x::Window = ev.window();
-                let mapvals = &[OverrideRedirect(true),EventMask(x::EventMask::FOCUS_CHANGE | x::EventMask::BUTTON_PRESS)];
+                let mapvals = &[EventMask(x::EventMask::FOCUS_CHANGE | x::EventMask::BUTTON_PRESS)];
                 
                 dpy.send_request_checked(&x::ChangeWindowAttributes {
                     window: win,
                     value_list: mapvals
                 });
 
-                dpy.send_request(&x::MapWindow { window: ev.window() });
+                dpy.send_request(&x::MapWindow { window: win });
                 
-                let _ = dpy.flush()?;
                 set_focus(&dpy,win);
+                let _ = dpy.flush()?;
+            },
+            xcb::Event::X(x::Event::ButtonPress(ev)) => {
+                let win = ev.child();
+                let pressvals = &[StackMode(x::StackMode::Above)];
+
+                dpy.send_request_checked(&x::ConfigureWindow {
+                    window: win,
+                    value_list: pressvals
+                });
+
+                set_focus(&dpy,win);
+                let _ = dpy.flush()?;
             },
             xcb::Event::X(x::Event::ConfigureRequest(ev)) => {
-                let configvals = &[x::ConfigWindow::X(ev.x().into()),x::ConfigWindow::Y(ev.y().into()),
-                                   x::ConfigWindow::Width(ev.width().into()),x::ConfigWindow::Height(ev.height().into())];
-                let mut _mask: usize = 0;
+                let configvals = &[X(ev.x().into()),Y(ev.y().into()),
+                                   Width(ev.width().into()),Height(ev.height().into()),
+                                   Sibling(ev.sibling()),StackMode(ev.stack_mode())];
 
                 dpy.send_request_checked(&x::ConfigureWindow {
                     window: ev.window(),
                     value_list: configvals
                 });
+
+                let _ = dpy.flush()?;
             },
             _ => {}
         }
